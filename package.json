@@ -1,0 +1,23 @@
+{
+  "name": "samwise",
+  "version": "1.0.0",
+  "description": "ultralight experiment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tim Bendt",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/mithril": "github:spacejack/mithril.d.ts#1.0.2",
+    "awesome-typescript-loader": "^3.1.2",
+    "css-loader": "^0.27.3",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "source-map-loader": "^0.2.0",
+    "style-loader": "^0.14.0",
+    "typescript": "^2.2.1"
+  },
+  "dependencies": {
+    "mithril": "^1.0.1"
+  }
+}
