@@ -334,10 +334,13 @@ var AppViewComponents;
             ]);
         }
     };
+    /**
+     * Footer shows schedule versus total and a checkmark icon
+     */
     AppViewComponents.Footer = {
         view: function (vnode) {
             var matchClass = (vnode.attrs.total === vnode.attrs.requested) ? 'icon-ok' : '';
-            return m('span', m('i', { class: matchClass }), vnode.attrs.total + ' / ' + vnode.attrs.requested);
+            return m('span', vnode.attrs.total + ' / ' + vnode.attrs.requested, m('span', { class: matchClass }));
         }
     };
     /**

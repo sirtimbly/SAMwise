@@ -23,6 +23,9 @@ export interface ViewModel {
     (model: any): any;
 }
 
+export interface ViewState {
+    
+}
 
 export class App {
     state: State;
@@ -31,3 +34,4 @@ export class App {
     views?: any;
     viewModels?: any;
 }
+

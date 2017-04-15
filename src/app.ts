@@ -176,10 +176,13 @@ module AppViewComponents {
         }
     } as Mithril.Component<AssignmentProps, State>
 
+    /**
+     * Footer shows schedule versus total and a checkmark icon
+     */
     export const Footer = {
         view: function(vnode) {
             let matchClass = (vnode.attrs.total === vnode.attrs.requested) ? 'icon-ok' : '';
-            return m('span', m('i', { class: matchClass }), vnode.attrs.total + ' / ' + vnode.attrs.requested) 
+            return m('span', vnode.attrs.total + ' / ' + vnode.attrs.requested, m('span', { class: matchClass }))
         }
     } as Mithril.Component<AssignmentProps, State>
 

@@ -16,11 +16,11 @@ module.exports = {
     module: {
         loaders: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-            { test: /\.tsx?$/, loader: "awesome-typescript-loader" },
-            {
-                test: /\.css$/,
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader")
-            }
+            { test: /\.tsx?$/, loader: "awesome-typescript-loader" }
+            // {
+            //     test: /\.css$/,
+            //     loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+            // }
         ]//,
 
         // preLoaders: [
@@ -28,9 +28,9 @@ module.exports = {
         //     { test: /\.js$/, loader: "source-map-loader" }
         // ]
     },
-    plugins: [
-        new ExtractTextPlugin("[name].css")
-    ],
+    // plugins: [
+    //     new ExtractTextPlugin("[name].css")
+    // ],
     // When importing a module whose path matches one of the following, just
     // assume a corresponding global variable exists and use that instead.
     // This is important because it allows us to avoid bundling all of our
