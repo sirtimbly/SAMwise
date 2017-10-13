@@ -1,14 +1,16 @@
 import { AssignmentModel, AssignmentProps } from './models/assignment_model';
 import { App, State, Model, Action } from './samwise/common';
-import * as m from 'mithril';
+import * as Mithril from 'mithril';
+import { UITab, UIProgressBar } from './components/UIAtoms';
 
+let m = Mithril;
 let app = new App;
 
 app.model = new AssignmentModel();
 
 module AppViewActions {
     /**
- * Actions (the UI sends messages out to the model)
+ * Actions (the UI sends messages out to change the model)
  * - changeAction() updates the model mased on slider events, the present() method has a default value so we don't have to leak model coupling into our views
  * - loadAction() gets new data will usually just be called when the app is first initialized
  */
@@ -49,17 +51,14 @@ class AppState implements State {
         }
         this.representation(model);
         this.nextAction(model);
-        //throw new Error('Method not implemented.');
+        
     }
     representation = (model: AssignmentProps) => {
         m.render(document.getElementById('tabs'), m(AppViewComponents.Tabs, model));
-        let component;
-        if (model.isEditing) {
-            component = AppViewComponents.Edit;
-        } else {
-           component = AppViewComponents.Review;
-        }
-        m.render(document.getElementById('mainapp'), m(component, model));
+        
+        let mainScreenComponent = (model.isEditing) ? AppViewComponents.Edit : AppViewComponents.Review;
+
+        m.render(document.getElementById('mainapp'), m(mainScreenComponent, model));
     }
     nextAction = (model: AssignmentProps) => {
        // throw new Error('Method not implemented.');
@@ -96,15 +95,9 @@ module AppViewComponents {
 
     export const Tabs = {
         view: function(vnode) {
-            return m("div.clearfix.mx2", [
-                m("button.btn.col.col-2", {
-                    class: vnode.attrs.isEditing ? 'bg-blue' : 'bg-cyan',
-                    onclick: (e) => {AppViewActions.switchToEdit()}
-                }, 'Edit'),
-                m("button.btn.col.col-2", {
-                    class: !vnode.attrs.isEditing ? 'bg-blue' : 'bg-cyan',
-                    onclick: (e) => {AppViewActions.switchToReview()}
-                }, 'Review'),
+            return m("div.flex.flex-row.mx3.my1", [
+                UITab('Sliders', vnode.attrs.isEditing, AppViewActions.switchToEdit),
+                UITab('Review', !vnode.attrs.isEditing, AppViewActions.switchToReview)
             ])
         }
     } as Mithril.Component<AssignmentProps,State> & State 
@@ -114,17 +107,19 @@ module AppViewComponents {
      */
     export const Slider = {
         view: function(vnode) {
-            return m("div.clearfix", [
-                m("div", {
-                    class: "title"
-                }, vnode.attrs.count + " " + vnode.attrs.name + " shifts assigned."),
-                m("input.col.col-10", {
+            return m("div.flex.bg-light-gray.p2.flex-reverse", [
+                
+                m("input.col-4", {
                     type: "range",
                     min: "0",
                     max: "100",
+                    name: "range"+vnode.attrs.name,
                     value: vnode.attrs.count,
                     onchange: (e) => {AppViewActions.changeAction(vnode.attrs.name, e.target.value)}
                 }),
+                m("label.title.col-3.px2", 
+                {for: "range"+vnode.attrs.name},
+                vnode.attrs.count + " " + vnode.attrs.name + " shifts assigned.")
             ])
         }
     } as Mithril.Component<SliderVM,State> & State 
@@ -143,39 +138,26 @@ module AppViewComponents {
      */
     export const Edit = {
         view: function(vnode) {
-            let sl1 = new SliderVM();
-            sl1.count = vnode.attrs.fulltime;
-            sl1.name = 'fulltime';
+ 
+            console.log(vnode.attrs)
+            let ftAvail = vnode.attrs.requested - vnode.attrs.parttime;
+            let ptAvail = vnode.attrs.requested - vnode.attrs.fulltime;
+            return m('div.border.rounded.p2.mx2.flex.flex-column', 
+            [
+                UIProgressBar(ftAvail, vnode.attrs.requested, "FT slots: " + ftAvail),
+                UIProgressBar(vnode.attrs.fulltime, 100),
+                m(AppViewComponents.Slider, <SliderVM>{count: vnode.attrs.fulltime, name:'FullTime'}),
+                
+                UIProgressBar(ptAvail, vnode.attrs.requested, "PT slots: " + ptAvail ),
+                UIProgressBar(vnode.attrs.parttime, 100),
+                m(AppViewComponents.Slider, <SliderVM>{count: vnode.attrs.parttime, name:'PartTime'}),
 
-            let sl2 = new SliderVM();
-            sl2.count = vnode.attrs.parttime;
-            sl2.name = 'parttime';
-
-        console.log(vnode.attrs)
-        return m('div.border.p2.mx2.clearfix', [
-                m('progress.col.col-10', {
-                    value: (vnode.attrs.requested - vnode.attrs.parttime),
-                    max: vnode.attrs.requested 
-                }),
-                m('progress.col.col-10', {
-                    value: (vnode.attrs.fulltime),
-                    max: 100
-                }),
-                m(AppViewComponents.Slider, sl1),
-                m('progress.col.col-10', {
-                    value: (vnode.attrs.requested - vnode.attrs.fulltime),
-                    max: vnode.attrs.requested 
-                }),
-                m('progress.col.col-10', {
-                    value: (vnode.attrs.parttime),
-                    max: 100
-                }),
-                m(AppViewComponents.Slider, sl2),
                 m(Footer, vnode.attrs)
             ]);
         }
     } as Mithril.Component<AssignmentProps, State>
-
+    
+    
     /**
      * Footer shows schedule versus total and a checkmark icon
      */

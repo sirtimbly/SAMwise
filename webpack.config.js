@@ -1,10 +1,17 @@
+
+let webpack = require("webpack");
+let HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     entry: "./src/app.ts",
     output: {
         filename: "bundle.js",
         path: __dirname + "/dist"
     },
-
+    devServer: {
+        contentBase: __dirname + '/',
+        port: 8080,
+        hot: true
+    },
     // Enable sourcemaps for debugging webpack's output.
     devtool: "source-map",
 
@@ -28,6 +35,18 @@ module.exports = {
         //     { test: /\.js$/, loader: "source-map-loader" }
         // ]
     },
+    plugins: [
+        new webpack.EnvironmentPlugin([
+            'NODE_ENV'
+        ]),
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NamedModulesPlugin(),
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: 'index.html',
+            inject: true
+          }),
+    ],
     // plugins: [
     //     new ExtractTextPlugin("[name].css")
     // ],
