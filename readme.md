@@ -39,6 +39,9 @@ I usually keep my model in a seperate file, but if it's small and simple it can 
 
 Take a look at `src/samwise/index.ts`
 
+
+![A diagram of the flow](http://uploads.timbendt.com.s3.amazonaws.com/dropzone/SAM%20Mithril-1.png)
+
 ## Actually rendering it into a page
 
 At the bottom of the app.ts file I have a call to a special LoadAction which does the initial loading of the data model and rendering for the first time. All future changes to the dom will be triggered by dom events that call actions that call the model.
