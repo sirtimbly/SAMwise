@@ -1,4 +1,4 @@
-import {Model} from '../samwise/common';
+import {Model} from '../samwise';
 /**
  * AssignmentProps
  */

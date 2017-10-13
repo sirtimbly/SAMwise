@@ -2,6 +2,13 @@ import * as Mithril from 'mithril';
 
 let m = Mithril;
 
+/* 
+Atoms are very generic and abstract so that they can be reused in the most places.
+They know nothing about where they will be implemented, the shape of the model, or 
+the details of the action functions they call.
+*/
+
+
 /**
  * UIProgressBar
  * @param value 

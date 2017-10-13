@@ -1,7 +1,8 @@
 import { AssignmentModel, AssignmentProps } from './models/assignment_model';
-import { App, State, Model, Action } from './samwise/common';
+import { App, State, Model, Action } from './samwise';
 import * as Mithril from 'mithril';
 import { UITab, UIProgressBar } from './components/UIAtoms';
+import { UISlider } from './components/UIMolecules';
 
 let m = Mithril;
 let app = new App;
@@ -10,10 +11,10 @@ app.model = new AssignmentModel();
 
 module AppViewActions {
     /**
- * Actions (the UI sends messages out to change the model)
- * - changeAction() updates the model mased on slider events, the present() method has a default value so we don't have to leak model coupling into our views
- * - loadAction() gets new data will usually just be called when the app is first initialized
- */
+     * Actions (the UI sends messages out to change the model)
+     * - changeAction() updates the model mased on slider events, the present() method has a default value so we don't have to leak model coupling into our views
+     * - loadAction() gets new data will usually just be called when the app is first initialized
+     */
     export const changeAction = function(target:string, value:number, present: (data: AssignmentProps) => void = app.model.present) : void {
             var data_ = new AssignmentProps();
             data_[target] = Number(value);
@@ -38,6 +39,8 @@ module AppViewActions {
 
 
 
+/* ============================================ */
+
 /**
  * AppState (when the model updates, examine it and determine how to update the UI)
  * - editing
@@ -47,7 +50,7 @@ class AppState implements State {
     render = (model: AssignmentProps) => {
         
         if (model.total >= model.requested) {
-            console.log("do some error stuff here - like a toast");
+            console.log("do some error checking and warnings here - like a toast");
         }
         this.representation(model);
         this.nextAction(model);
@@ -56,6 +59,7 @@ class AppState implements State {
     representation = (model: AssignmentProps) => {
         m.render(document.getElementById('tabs'), m(AppViewComponents.Tabs, model));
         
+        //depending on which state the app is in we show a different component
         let mainScreenComponent = (model.isEditing) ? AppViewComponents.Edit : AppViewComponents.Review;
 
         m.render(document.getElementById('mainapp'), m(mainScreenComponent, model));
@@ -70,29 +74,23 @@ app.state = new AppState();
 //setting the default model stateRenderer to state function is important for decoupling state implementation from the model implementation
 app.model.stateRenderer = app.state.render;
 
+
+
+/* ============================================ */
 /**
- * App View Components (these functions make the actual UI layer updates).
- *  They are bound to the action implementations of the app.actions object.
+ * App View Components (these functions make the actual UI layer updates). 
+ * They are implementation specific and tightly coupled to the actions above from the app.actions object.
  * + edit
  *  - slider
  * + review
  */
 module AppViewComponents {
 
-    interface State {}
+    interface State {} 
+
     /**
-     * Slider Component ViewModel
+     * Tabs component is coupled to the state model so we define it here instead of in the UIMolecules file
      */
-    export class SliderVM {
-        count:number;
-        name:string;
-    }
-
-    export class ProgressVM {
-        value: number;
-        max: number;
-    }
-
     export const Tabs = {
         view: function(vnode) {
             return m("div.flex.flex-row.mx3.my1", [
@@ -102,36 +100,7 @@ module AppViewComponents {
         }
     } as Mithril.Component<AssignmentProps,State> & State 
 
-    /**
-     * Slider is a component with heading and a range input that changes either fulltime or parttime values
-     */
-    export const Slider = {
-        view: function(vnode) {
-            return m("div.flex.bg-light-gray.p2.flex-reverse", [
-                
-                m("input.col-4", {
-                    type: "range",
-                    min: "0",
-                    max: "100",
-                    name: "range"+vnode.attrs.name,
-                    value: vnode.attrs.count,
-                    onchange: (e) => {AppViewActions.changeAction(vnode.attrs.name, e.target.value)}
-                }),
-                m("label.title.col-3.px2", 
-                {for: "range"+vnode.attrs.name},
-                vnode.attrs.count + " " + vnode.attrs.name + " shifts assigned.")
-            ])
-        }
-    } as Mithril.Component<SliderVM,State> & State 
-
-    /**
-     * MaxProgress Component
-     */
-    export const MaxProgress = {
-        view: function(vnode) {
-            
-        }
-    } as Mithril.Component<ProgressVM, State>
+    
 
     /**
      * Edit Component includes multiple sliders
@@ -146,11 +115,11 @@ module AppViewComponents {
             [
                 UIProgressBar(ftAvail, vnode.attrs.requested, "FT slots: " + ftAvail),
                 UIProgressBar(vnode.attrs.fulltime, 100),
-                m(AppViewComponents.Slider, <SliderVM>{count: vnode.attrs.fulltime, name:'FullTime'}),
+                UISlider('Full Time', vnode.attrs.fulltime, (val) => AppViewActions.changeAction('fulltime', val)),
                 
                 UIProgressBar(ptAvail, vnode.attrs.requested, "PT slots: " + ptAvail ),
                 UIProgressBar(vnode.attrs.parttime, 100),
-                m(AppViewComponents.Slider, <SliderVM>{count: vnode.attrs.parttime, name:'PartTime'}),
+                UISlider('Part Time', vnode.attrs.parttime, (val) => AppViewActions.changeAction('parttime', val)),
 
                 m(Footer, vnode.attrs)
             ]);
@@ -200,6 +169,10 @@ module AppViewComponents {
 
     
 }
+
+
+/* ============================================ */
+/* ENGAGE! */
 
 console.log("initial view state");
 AppViewActions.loadAction(app.model.present)
