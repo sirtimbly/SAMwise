@@ -75,3 +75,13 @@
 .icon-calendar:before { content: '\e80f'; } /* '' */
 .icon-menu:before { content: '\f0c9'; } /* '' */
 .icon-comment-empty:before { content: '\f0e5'; } /* '' */
+
+/* ------ */
+
+.border-blue {
+  border: 1px solid #82bce4;
+}
+
+.bg-white {
+  background-color: #fafafa;
+}

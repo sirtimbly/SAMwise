@@ -1,5 +1,5 @@
 import {Model} from '../samwise';
-/**
+/** 
  * AssignmentProps
  */
 export class AssignmentProps {
@@ -8,6 +8,7 @@ export class AssignmentProps {
     requested: number;
     total: number;
     isEditing: true;
+    isValid: boolean;
 
     constructor (data?: any) {
         if (data) {

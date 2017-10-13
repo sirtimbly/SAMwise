@@ -17,11 +17,11 @@ the details of the action functions they call.
  */
 export const UIProgressBar = function(value:number, max:number, label?:string) {
     return m('div.guage-item.flex.px2', [
-        m('progress.col.col-4.mr2', {
+        m('progress.mx1.col-8', {
             value: (value),
             max: max
         }),
-        label ? m('span.bold', label) : ''
+        label ? m('span.bold.ml2', label) : ''
     ])
 }
 
@@ -32,7 +32,7 @@ export const UIProgressBar = function(value:number, max:number, label?:string) {
  * @param action the click action function to call, will be passed nothing
  */
 export const UITab = function(label:string, active:boolean, action:()=>void) {
-    return m("button.btn.col-2.mt1.mr1.btn-large.rounded-top", {
+    return m("button.btn.btn-lg.mt1.mr1.rounded-top", {
         class: active ? 'bg-blue' : 'bg-light-gray',
         onclick: (e) => {action()}
     }, label)

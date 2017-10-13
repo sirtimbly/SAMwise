@@ -30,10 +30,16 @@ module AppViewActions {
             }));
     }
     export const switchToReview = function(present: (data:AssignmentProps) => void = app.model.present) : void {
+        console.log('switching tabs')
         present(new AssignmentProps({isEditing: false}))
     }
     export const switchToEdit = function(present: (data:AssignmentProps) => void = app.model.present) : void {
+        console.log('switching tabs')
         present(new AssignmentProps({isEditing: true}))
+    }
+
+    export const saveData = function(present: (data:AssignmentProps) => void = app.model.present) : void {
+        console.log('save clicked, fake saving to an API');
     }
 }
 
@@ -49,9 +55,11 @@ module AppViewActions {
 class AppState implements State {
     render = (model: AssignmentProps) => {
         
-        if (model.total >= model.requested) {
+        if (model.total > model.requested) {
             console.log("do some error checking and warnings here - like a toast");
         }
+
+        model.isValid = (model.total === model.requested);
         this.representation(model);
         this.nextAction(model);
         
@@ -93,8 +101,8 @@ module AppViewComponents {
      */
     export const Tabs = {
         view: function(vnode) {
-            return m("div.flex.flex-row.mx3.my1", [
-                UITab('Sliders', vnode.attrs.isEditing, AppViewActions.switchToEdit),
+            return m("div.flex.flex-row.mx3.mt1", [
+                UITab('Widget Production Plan', vnode.attrs.isEditing, AppViewActions.switchToEdit),
                 UITab('Review', !vnode.attrs.isEditing, AppViewActions.switchToReview)
             ])
         }
@@ -111,15 +119,15 @@ module AppViewComponents {
             console.log(vnode.attrs)
             let ftAvail = vnode.attrs.requested - vnode.attrs.parttime;
             let ptAvail = vnode.attrs.requested - vnode.attrs.fulltime;
-            return m('div.border.rounded.p2.mx2.flex.flex-column', 
+            return m('div.border.border-blue.bg-white.rounded.p2.mx2.flex.flex-column', 
             [
-                UIProgressBar(ftAvail, vnode.attrs.requested, "FT slots: " + ftAvail),
-                UIProgressBar(vnode.attrs.fulltime, 100),
-                UISlider('Full Time', vnode.attrs.fulltime, (val) => AppViewActions.changeAction('fulltime', val)),
+                UIProgressBar(ftAvail, vnode.attrs.requested, "Big Widget slots: " + ftAvail),
+                UIProgressBar(vnode.attrs.fulltime, vnode.attrs.requested),
+                UISlider('Big Widget', vnode.attrs.fulltime, (val) => AppViewActions.changeAction('fulltime', val), vnode.attrs.requested),
                 
-                UIProgressBar(ptAvail, vnode.attrs.requested, "PT slots: " + ptAvail ),
-                UIProgressBar(vnode.attrs.parttime, 100),
-                UISlider('Part Time', vnode.attrs.parttime, (val) => AppViewActions.changeAction('parttime', val)),
+                UIProgressBar(ptAvail, vnode.attrs.requested, "Small Widget slots: " + ptAvail ),
+                UIProgressBar(vnode.attrs.parttime, vnode.attrs.requested),
+                UISlider('Small Widget', vnode.attrs.parttime, (val) => AppViewActions.changeAction('parttime', val), vnode.attrs.requested),
 
                 m(Footer, vnode.attrs)
             ]);
@@ -132,8 +140,13 @@ module AppViewComponents {
      */
     export const Footer = {
         view: function(vnode) {
-            let matchClass = (vnode.attrs.total === vnode.attrs.requested) ? 'icon-ok' : '';
-            return m('span', vnode.attrs.total + ' / ' + vnode.attrs.requested, m('span', { class: matchClass }))
+            
+            let matchClass = vnode.attrs.isValid ? 'icon-ok' : '';
+            return m('div.p2.m1',
+                {
+                    class: vnode.attrs.isValid ? 'bg-green' : 'bg-red'
+                },
+                'Widget Quota: ' + vnode.attrs.total + ' of ' + vnode.attrs.requested, m('span', { class: matchClass }))
         }
     } as Mithril.Component<AssignmentProps, State>
 
@@ -147,11 +160,11 @@ module AppViewComponents {
                 m("table.table", [
                     m("tbody", [
                         m("tr", [
-                            m("td", "Full Time Slots"),
+                            m("td", "Big Widget Slots"),
                             m("td", vnode.attrs.fulltime)
                         ]),
                         m("tr", [
-                            m("td", "Part Time Slots"),
+                            m("td", "Small Widget Slots"),
                             m("td", vnode.attrs.parttime)
                         ]),
                         m("tr.text-bold.bg-blue", [
@@ -161,7 +174,14 @@ module AppViewComponents {
                             ])
                         ])
                     ])
-                ])
+                ]),
+                m('button.btn.btn-lg.m3',
+                {
+                    class: vnode.attrs.isValid ? 'bg-blue': 'bg-gray',
+                    disabled: !vnode.attrs.isValid ? 'disabled' : '',
+                    onclick: (e) => AppViewActions.saveData()
+                },
+                'Save')
             ])
         }
         
