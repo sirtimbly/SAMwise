@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UISlider should have text 1`] = `
+"<div class=\\"flex bg-light-gray p2 m1 flex-reverse\\">
+  <input type=\\"range\\" min=\\"0\\" max=\\"10\\" name=\\"range_widget\\" class=
+  \\"col-8\\"><label for=\\"range_widget\\" class=\\"title col-4 px2\\">5
+  widget shifts assigned.</label>
+</div>
+"
+`;

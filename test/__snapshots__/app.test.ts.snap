@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App should have footer 1`] = `
+"<div class=
+\\"border border-blue bg-white rounded p2 mx2 flex flex-column\\">
+  <div class=\\"guage-item flex px2\\">
+    <progress value=\\"50\\" max=\\"80\\" class=
+    \\"mx1 col-8\\"></progress><span class=\\"bold ml2\\">Big Widget slots:
+    50</span>
+  </div>
+  <div class=\\"guage-item flex px2\\">
+    <progress value=\\"20\\" max=\\"80\\" class=\\"mx1 col-8\\"></progress>
+  </div>
+  <div class=\\"flex bg-light-gray p2 m1 flex-reverse\\">
+    <input type=\\"range\\" min=\\"0\\" max=\\"80\\" name=\\"range_Big%20Widget\\"
+    class=\\"col-8\\"><label for=\\"range_Big%20Widget\\" class=
+    \\"title col-4 px2\\">20 Big Widget shifts assigned.</label>
+  </div>
+  <div class=\\"guage-item flex px2\\">
+    <progress value=\\"60\\" max=\\"80\\" class=
+    \\"mx1 col-8\\"></progress><span class=\\"bold ml2\\">Small Widget
+    slots: 60</span>
+  </div>
+  <div class=\\"guage-item flex px2\\">
+    <progress value=\\"30\\" max=\\"80\\" class=\\"mx1 col-8\\"></progress>
+  </div>
+  <div class=\\"flex bg-light-gray p2 m1 flex-reverse\\">
+    <input type=\\"range\\" min=\\"0\\" max=\\"80\\" name=
+    \\"range_Small%20Widget\\" class=\\"col-8\\"><label for=
+    \\"range_Small%20Widget\\" class=\\"title col-4 px2\\">30 Small Widget
+    shifts assigned.</label>
+  </div>
+  <div class=\\"p2 m1 bg-red\\">
+    Widget Quota: undefined of 80<span class=\\"\\"></span>
+  </div>
+</div>
+"
+`;

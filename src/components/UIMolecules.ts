@@ -1,6 +1,6 @@
-import * as Mithril from 'mithril';
+import * as m from 'mithril';
 
-let m = Mithril;
+// let m = Mithril;
 
 /*
 Molecules are more specific than Atoms and have some more complicated layout or logic

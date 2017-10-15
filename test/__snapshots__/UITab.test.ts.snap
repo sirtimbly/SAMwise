@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UITab should have text 1`] = `
+"<button class=\\"btn btn-lg mt1 mr1 rounded-top bg-blue\\">hello
+tab</button>
+"
+`;

@@ -3,32 +3,67 @@
   "version": "1.0.0",
   "description": "ultralight experiment",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sirtimbly/SAMwise.git"
+  },
   "scripts": {
     "start": "npm run server:dev",
     "server:dev": "cross-env NODE_ENV=development node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js -d",
     "server:prod": "cross-env NODE_ENV=production node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js -p",
     "build:dev": "cross-env NODE_ENV=development webpack -d",
-    "build:prod": "cross-env NODE_ENV=production webpack -p"
+    "build:prod": "cross-env NODE_ENV=production webpack -p",
+    "test": "jest"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleDirectories": [
+      "node_modules",
+      "bower_components",
+      "shared"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    }
   },
   "author": "Tim Bendt",
   "license": "ISC",
   "devDependencies": {
     "@types/html-webpack-plugin": "^2.28.0",
+    "@types/jest": "^21.1.2",
     "@types/mithril": "github:spacejack/mithril.d.ts",
     "@types/webpack": "^3.0.13",
     "@types/webpack-dev-server": "^2.9.0",
-    "awesome-typescript-loader": "^3.2.3",
     "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
     "extract-text-webpack-plugin": "^3.0.1",
     "html-webpack-plugin": "^2.28.0",
+    "jest": "^21.2.1",
+    "mithril-jest": "^0.1.7",
+    "mithril-query": "^2.2.0",
     "source-map-loader": "^0.2.2",
     "style-loader": "^0.19.0",
+    "ts-jest": "^21.1.2",
+    "ts-loader": "2.3.7",
     "typescript": "^2.5.3",
     "webpack": "^3.7.1",
     "webpack-dev-server": "^2.9.1"
   },
   "dependencies": {
+    "@types/maquette": "^2.1.6",
+    "maquette": "^2.5.4",
     "mithril": "^1.1.4"
   }
 }

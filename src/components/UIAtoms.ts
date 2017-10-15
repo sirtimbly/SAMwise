@@ -1,6 +1,6 @@
-import * as Mithril from 'mithril';
+import * as m from 'mithril/hyperscript';
 
-let m = Mithril;
+// let m = Mithril;
 
 /* 
 Atoms are very generic and abstract so that they can be reused in the most places.
