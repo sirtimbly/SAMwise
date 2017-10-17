@@ -1,90 +1,92 @@
-import { AssignmentModel, AssignmentProps } from './models/assignment_model';
-import { App, State, Model, Action } from './samwise';
-import * as m from 'mithril';
-import { AppViewComponents } from './components/AppViewComponents'
+import * as maquette from "maquette";
+import { AppViewComponents } from "./components/AppViewComponents";
+import { AssignmentProps } from "./models/assignment_model";
+import {
+    App,
+    AppState,
+    ComponentMap,
+    IActions,
+    Model,
+    ViewActions,
+} from "./samwise";
 
-// let m = Mithril;
-let app = new App;
-
-app.model = new AssignmentModel();
-
-export class AppViewActions {
-    /**
-     * Actions (the UI sends messages out to change the model)
-     * - changeAction() updates the model mased on slider events, the present() method has a default value so we don't have to leak model coupling into our views
-     * - loadAction() gets new data will usually just be called when the app is first initialized
-     */
-    changeAction = function(target:string, value:number, present: (data: AssignmentProps) => void = app.model.present) : void {
-            var data_ = new AssignmentProps();
-            data_[target] = Number(value);
-            present(data_);
-    }
-    loadAction = function(present: (data:AssignmentProps) => void) {
-            console.log("load: pretend we have an api call here");
-            present(new AssignmentProps({
-            fulltime:20,
-            parttime:30,
-            requested:80,
-            isEditing: true
-            }));
-    }
-    switchToReview = function(present: (data:AssignmentProps) => void = app.model.present) : void {
-        console.log('switching tabs')
-        present(new AssignmentProps({isEditing: false}))
-    }
-    switchToEdit = function(present: (data:AssignmentProps) => void = app.model.present) : void {
-        console.log('switching tabs')
-        present(new AssignmentProps({isEditing: true}))
-    }
-
-    saveData = function(present: (data:AssignmentProps) => void = app.model.present) : void {
-        console.log('save clicked, fake saving to an API');
-    }
-}
-app.actions = new AppViewActions();
-
-
-/* ============================================ */
+/* Before we can create an app we need to specify a
+class containing component functions, and a class
+defining the action functions */
 
 /**
- * AppState (when the model updates, examine it and determine how to update the UI)
- * - editing
- * - reviewing
+ * AppViewActions (the UI sends messages out to change the model)
+ * - changeAction() updates the model mased on slider events, the present()
+ *   method has a default value so we don't have to leak model coupling into our views
+ * - loadAction() gets new data will usually just be called when the app is first initialized
+ * - switchToReview()
+ * - switchToEdit()
+ * - saveData()
  */
-class AppState implements State {
-    render = (model: AssignmentProps) => {
-        
-        if (model.total > model.requested) {
-            console.log("do some error checking and warnings here - like a toast");
-        }
+export class AppViewActions extends ViewActions<AssignmentProps> {
 
-        model.isValid = (model.total === model.requested);
-        this.representation(model);
-        this.nextAction(model);
-        
+    /**
+     * Method that changes a single number value on the model
+     *
+     * @param {string} target the property name
+     * @param {number} value the new value
+     */
+    public changeAction = (target: string, value: number): void => {
+        this.data[target] = Number(value);
+        this.renderer(this.data);
     }
-    representation = (model: AssignmentProps) => {
-        m.render(document.getElementById('tabs'), m(app.views.Tabs, model));
-        
-        //depending on which state the app is in we show a different component
-        let mainScreenComponent = (model.isEditing) ? app.views.Edit : app.views.Review;
 
-        m.render(document.getElementById('mainapp'), m(mainScreenComponent, model));
+    public loadAction = () => {
+        // console.log("load: pretend we have an api call here");
+        this.renderer(this.data);
     }
-    nextAction = (model: AssignmentProps) => {
-       // throw new Error('Method not implemented.');
+
+    public switchToReview = (): void => {
+        // console.log('switching tabs')
+        this.data.isEditing = false;
+        this.renderer(this.data);
     }
+
+    public switchToEdit = (): void => {
+        // console.log('switching tabs');
+        this.data.isEditing = true;
+        this.renderer(this.data);
+    }
+
+    public saveData = (): void => null;
 }
 
-app.state = new AppState();
+const calculateState = (props: AssignmentProps) => {
+    props.fulltime = Math.min(props.fulltime, props.requested - props.parttime);
+    props.parttime = Math.min(props.parttime, props.requested - props.fulltime);
+    props.ftAvail = props.requested - props.parttime;
+    props.ptAvail = props.requested - props.fulltime;
+    props.total = props.fulltime + props.parttime;
+    props.isValid = props.total === props.requested;
+    return props;
+};
 
-//setting the default model stateRenderer to state function is important for decoupling state implementation from the model implementation
-app.model.stateRenderer = app.state.render;
+// Now we've created the actions, let's spin up our app
 
-app.views = new AppViewComponents(app);
-export const Application = app;
+const app = new App<AssignmentProps, AppViewComponents>(
+    calculateState({
+        fulltime: 20,
+        isEditing: true,
+        parttime: 30,
+        requested: 80,
+    } as AssignmentProps),
+    (p: maquette.Projector) => new AppState<AssignmentProps>(p, calculateState),
+    (m: Model<AssignmentProps>): ViewActions<AssignmentProps> => new AppViewActions(m),
+    (a: AppViewActions) => new AppViewComponents(a));
+
+// Once the app is ready we can call init() and specify elements in the page we are replacing with view function
+app.init([{
+            comp: app.views.Tabs,
+            el: document.getElementById("tabs"),
+        },
+        {
+            comp: app.views.TabLoader,
+            el: document.getElementById("mainapp"),
+        }]);
+
 /* ============================================ */
-/* ENGAGE! */
-
-console.log("initial view state");
-app.actions.loadAction(app.model.present)
